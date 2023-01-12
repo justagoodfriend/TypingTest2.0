@@ -4,13 +4,17 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public interface TypeModel {
-  boolean charValidation(char input);
+  boolean charValidation(String input);
 
-  void spaceUpdate(char space);
+  ArrayList<String> spaceUpdate();
 
-  ArrayList<String> generateWords() throws FileNotFoundException;
+  ArrayList<String> generateWords();
 
-  void createNewLine();
+  ArrayList<String> getWordList();
+
+  int calculateWPM(int seconds);
+
+  double calculateAccuracy();
 
 
 }

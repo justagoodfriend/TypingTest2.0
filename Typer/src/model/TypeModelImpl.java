@@ -28,36 +28,73 @@ public class TypeModelImpl implements TypeModel {
   private ArrayList<String> testwordlist = new ArrayList<String>(Arrays.asList("about", "above", "add", "after", "again", "air", "all", "almost", "along"));
 
   //maybe more constructors in the near future depending on the type of settings the user chooses, but for now just defaults
-  public TypeModelImpl() throws FileNotFoundException {
+  public TypeModelImpl() {
     //im thinking about when choosing a language to type in, it loads it and throws it in here, so it would be passed as an argument
     this.currentLine = generateWords();
+    //this.upcomingLine = generateWords();
     this.createdWord = new ArrayList<Character>();
     this.keysPressed = 0;
     this.correctKeysPressed = 0;
 
   }
 
-  //want the abiltiy to allow for mistakes/no mistakes, ie can keep typing when keys are wrong, or just can't progress
-  //until the word is correct like type racer, maybe that can be in a separate model.
 
   @Override
-  public boolean charValidation(char input) {
-    return false;
+  //this should be a void
+  public boolean charValidation(String input) {
+    //cases for backspace, if we have room we remove else we just do nothing
+    if(input.equals("backspace")) {
+      if(createdWord.size() == 0){
+        return true;
+      }
+      //remove the last character if there is space
+      createdWord.remove(createdWord.size() - 1);
+      return this.matchingLetters();
+    } else {
+      char letter = input.charAt(0);
+      //first make the character lowercase, because the key pressed only recognize uppercase
+      if(Character.isDigit(letter) || Character.isLetter(letter)){
+        char character = Character.toLowerCase(letter);
+        //can probably optimize this so that it doesn't keep checking through already existing characters, i.e if
+        //the list is already wrong, adding another character will still keep the matching letters wrong, but for another day
+        this.createdWord.add(character);
+        System.out.println("This is currently our created word " + this.createdWord);
+        return this.matchingLetters();
+      } //else don't care for now about other keys/punctuation.
+    }
 
+    return false;
   }
 
-  //the action listeners may make the parameters useless.
+  private boolean matchingLetters(){
+    if(createdWord.size() > currentLine.get(0).length()){
+      return false;
+    }
+    for(int i = 0; i < createdWord.size(); i ++){
+      if(this.currentLine.get(0).charAt(i) != createdWord.get(i)){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  //change the logic of this so that it only moves the index of the list.
   @Override
-  public void spaceUpdate(char space) {
-    //once spaces are coming in and we create a new word, we remove from our wordlist, to update where we are within the list
-    //(issue is this doesn't allow for backspaces after typed words)
+  public ArrayList<String> spaceUpdate() {
+    this.calculateScoreForWord();
 
+    System.out.println("Correct keys pressed so far " + correctKeysPressed);
+    System.out.println("Total keys pressed including incorrect " + keysPressed);
+    //clear the current word we made
+    this.createdWord = new ArrayList<Character>();
+    //remove the element we were typing in, i.e shift forward
+    this.currentLine.remove(0);
+    //if we have no more characters after we remove, create another new line.
+    if(currentLine.size() == 0){
+      this.currentLine = generateWords();
+    }
 
-
-    //once the space key comes in, needs to determine if this is the start of a new line and needs to generate another line
-
-
-    //otherwise shifts where we are within our list by one, and then adds the amount of resulting correct keys to our total pressed.
+    return this.currentLine;
 
   }
 
@@ -66,7 +103,7 @@ public class TypeModelImpl implements TypeModel {
    typing out a line it generates a new line.
    */
   @Override
-  public ArrayList<String> generateWords() throws FileNotFoundException {
+  public ArrayList<String> generateWords(){
     //will update this later to actually read a file, for some reason not finding the file locally.
     Random randomizer = new Random();
     ArrayList<String> newList = new ArrayList<String>();
@@ -88,13 +125,37 @@ public class TypeModelImpl implements TypeModel {
     return newList;
   }
 
-  //don't think I need this initially created this for when I have more than 1 line, but can come back to it.
+  //needed for the model to communicate with the view
   @Override
-  public void createNewLine() {
-
+  public ArrayList<String> getWordList() {
+    return this.currentLine;
   }
 
-  private int calculateScore(int timeElapsed){
-    return 0;
+  //once we press enter, we need to determine how many of the keys were correctly typed.
+  private void calculateScoreForWord(){
+    this.keysPressed += this.createdWord.size();
+    int minSize = Math.min(this.currentLine.get(0).length(), this.createdWord.size());
+    for(int i = 0; i < minSize; i ++){
+      if(this.createdWord.get(i).equals(currentLine.get(0).charAt(i))){
+        correctKeysPressed +=1;
+      }
+    }
+    System.out.println("this is currently how many keys we have pressed:" + keysPressed);
+    System.out.println("this is how many correct keys we ave pressed" + correctKeysPressed);
+  }
+
+  @Override
+  public int calculateWPM(int seconds){
+    //how to typically resolve floating point context errors
+    double timeInMinutes = (double)seconds/60;
+
+    int basicWPM = (int) ((keysPressed/5) / timeInMinutes);
+
+    return (int)(basicWPM * this.calculateAccuracy())/100;
+  }
+
+  @Override
+  public double calculateAccuracy(){
+    return (double) this.correctKeysPressed/ (double) this.keysPressed * 100;
   }
 }
