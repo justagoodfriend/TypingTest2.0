@@ -9,7 +9,7 @@ import model.TypeModelImpl;
 
 public class Scannertest {
   public static void main(String args[]) throws IOException {
-    //mayeb in here
+    //maybe in here
     TypeModel testmodel = new TypeModelImpl();
 
   }

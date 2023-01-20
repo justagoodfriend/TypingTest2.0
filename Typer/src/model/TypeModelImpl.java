@@ -12,7 +12,6 @@ import java.util.Scanner;
 //import model.wordlists.*;
 
 
-
 public class TypeModelImpl implements TypeModel {
   //represents the amount of characters per line
   private static final int LINE_WIDTH = 65;
@@ -25,15 +24,19 @@ public class TypeModelImpl implements TypeModel {
   //correct keys pressed which will be used to adjust wpm based on accuracy.
   private int correctKeysPressed;
 
-  private ArrayList<String> testwordlist = new ArrayList<String>(Arrays.asList("about", "above", "add", "after", "again", "air", "all", "almost", "along"));
+  //random collection holding all wordlists
+  private RandCollection<ArrayList<String>> rc;
+
+  private ArrayList<String> testwordlist = WordUtils.generateLists().get(4);
 
   //maybe more constructors in the near future depending on the type of settings the user chooses, but for now just defaults
   public TypeModelImpl() throws FileNotFoundException {
     //im thinking about when choosing a language to type in, it loads it and throws it in here, so it would be passed as an argument
-    this.currentLine = generateWords();
     this.createdWord = new ArrayList<Character>();
     this.keysPressed = 0;
     this.correctKeysPressed = 0;
+    this.rc = WordUtils.rcMaker();
+    this.currentLine = generateWords();
 
   }
 
@@ -66,7 +69,7 @@ public class TypeModelImpl implements TypeModel {
    typing out a line it generates a new line.
    */
   @Override
-  public ArrayList<String> generateWords() throws FileNotFoundException {
+  public ArrayList<String> generateWords() {
     //will update this later to actually read a file, for some reason not finding the file locally.
     Random randomizer = new Random();
     ArrayList<String> newList = new ArrayList<String>();
@@ -74,7 +77,7 @@ public class TypeModelImpl implements TypeModel {
 
     while(charCount < LINE_WIDTH){
       //pulled this right off stack exchange, and should randomly select a word from a list.
-      String selectedWord = testwordlist.get(randomizer.nextInt(testwordlist.size()));
+      String selectedWord = rc.next().get(randomizer.nextInt(rc.next().size()));
       if(selectedWord.length() + charCount > LINE_WIDTH){
         //once we find a word that is longer than our expected line width we exit and don't add the word
         break;
@@ -84,7 +87,11 @@ public class TypeModelImpl implements TypeModel {
       charCount+= selectedWord.length();
     }
 
-    System.out.println(newList);
+    for (int i = 0; i < newList.size(); i++) {
+      System.out.print(newList.get(i));
+      System.out.print(" ");
+    }
+
     return newList;
   }
 
