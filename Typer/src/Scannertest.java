@@ -14,7 +14,7 @@ public class Scannertest {
     //maybe in here load the file and then determine what sort of language we are using
     TypeModel testmodel = new TypeModelImpl();
     //timer reprsenting the amount of time you want the test to last.
-    TypeView testview = new TypeViewImpl(testmodel, 5);
+    TypeView testview = new TypeViewImpl(testmodel, 60);
 
 
   }

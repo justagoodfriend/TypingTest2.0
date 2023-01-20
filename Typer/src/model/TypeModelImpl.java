@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -24,17 +25,22 @@ public class TypeModelImpl implements TypeModel {
   private int keysPressed;
   //correct keys pressed which will be used to adjust wpm based on accuracy.
   private int correctKeysPressed;
+  private boolean currentlyShifted;
 
-  private ArrayList<String> testwordlist = new ArrayList<String>(Arrays.asList("about", "above", "add", "after", "again", "air", "all", "almost", "along"));
+  private RandCollection<ArrayList<String>> rc;
+  private ArrayList<String> wrongChars;
 
   //maybe more constructors in the near future depending on the type of settings the user chooses, but for now just defaults
   public TypeModelImpl() {
     //im thinking about when choosing a language to type in, it loads it and throws it in here, so it would be passed as an argument
+    this.rc = WordUtils.rcMaker();
     this.currentLine = generateWords();
     //this.upcomingLine = generateWords();
     this.createdWord = new ArrayList<Character>();
     this.keysPressed = 0;
     this.correctKeysPressed = 0;
+    this.wrongChars = new ArrayList<String>();
+    this.currentlyShifted = false;
 
   }
 
@@ -50,11 +56,18 @@ public class TypeModelImpl implements TypeModel {
       //remove the last character if there is space
       createdWord.remove(createdWord.size() - 1);
       return this.matchingLetters();
-    } else {
+    }
+   if(input.equals("shift")){
+     this.currentlyShifted = true;
+    }
+
+    else {
       char letter = input.charAt(0);
       //first make the character lowercase, because the key pressed only recognize uppercase
       if(Character.isDigit(letter) || Character.isLetter(letter)){
         char character = Character.toLowerCase(letter);
+        //depending on if we are already shifted we
+
         //can probably optimize this so that it doesn't keep checking through already existing characters, i.e if
         //the list is already wrong, adding another character will still keep the matching letters wrong, but for another day
         this.createdWord.add(character);
@@ -65,6 +78,8 @@ public class TypeModelImpl implements TypeModel {
 
     return false;
   }
+
+  //method to toggle when we are shifted
 
   private boolean matchingLetters(){
     if(createdWord.size() > currentLine.get(0).length()){
@@ -111,7 +126,7 @@ public class TypeModelImpl implements TypeModel {
 
     while(charCount < LINE_WIDTH){
       //pulled this right off stack exchange, and should randomly select a word from a list.
-      String selectedWord = testwordlist.get(randomizer.nextInt(testwordlist.size()));
+      String selectedWord = rc.next().get(randomizer.nextInt(rc.next().size()));
       if(selectedWord.length() + charCount > LINE_WIDTH){
         //once we find a word that is longer than our expected line width we exit and don't add the word
         break;
@@ -138,6 +153,9 @@ public class TypeModelImpl implements TypeModel {
     for(int i = 0; i < minSize; i ++){
       if(this.createdWord.get(i).equals(currentLine.get(0).charAt(i))){
         correctKeysPressed +=1;
+      }else{
+        //adds the incorrect characters to list to generate incorrect answers.
+        //this.wrongChars.add(this.createdWord.get(i));
       }
     }
     System.out.println("this is currently how many keys we have pressed:" + keysPressed);

@@ -101,6 +101,11 @@ public class TypeViewImpl extends JFrame implements TypeView, KeyListener, Actio
         this.wordBox.setText("");
         break;
 
+      case KeyEvent.VK_SHIFT: {
+        ArrayList<String> result = this.model.getWordList();
+        boolean correct = this.model.charValidation("shift");
+        break;
+      }
       default: {
         ArrayList<String> result = this.model.getWordList();
         boolean correct = this.model.charValidation(KeyEvent.getKeyText(e.getKeyCode()));
@@ -136,6 +141,8 @@ public class TypeViewImpl extends JFrame implements TypeView, KeyListener, Actio
 
   @Override
   public void keyReleased(KeyEvent e) {
+    System.out.println("this Key was released: " + KeyEvent.getKeyText(e.getKeyCode()));
+    //for shifting, once I detect a
   }
 
   @Override
