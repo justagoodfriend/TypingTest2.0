@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class WordUtils {
+    //in the future make this more efficient in grabbing word lists
     public static ArrayList<ArrayList<String>> generateLists() {
         ArrayList<String> a = new ArrayList<String>(Arrays.asList("allow", "age", "awaken", "airport", "accept",
                 "answer", "autumn", "ability", "action", "apple"));
@@ -64,12 +65,27 @@ public class WordUtils {
                 t, u, v, w, x, y, z));
     }
 
-    public static RandCollection<ArrayList<String>> rcMaker() {
+    public static RandCollection<ArrayList<String>> rcMaker(ArrayList<String> wrongLetters) {
+        ArrayList<Integer> indexes = letterConverter(wrongLetters);
         RandomCollection<ArrayList<String>> rc = new RandomCollection<ArrayList<String>>();
         for (int i = 0; i < 26; i++) {
-            rc.add(5, generateLists().get(i));
+            for (int j = 0; j < indexes.size(); j++) {
+                int w = 1;
+                if (i == indexes.get(j)) {
+                    w++;
+                }
+                rc.add(w, generateLists().get(i));
+            }
         }
-
         return rc;
+    }
+
+    public static ArrayList<Integer> letterConverter(ArrayList<String> letters) {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        ArrayList<Integer> indexes = new ArrayList<Integer>();
+        for(int i = 0; i < letters.size(); i++) {
+            indexes.add(alphabet.indexOf(letters.get(i)));
+        }
+        return indexes;
     }
 }
