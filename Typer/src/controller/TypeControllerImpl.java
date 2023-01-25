@@ -2,12 +2,14 @@ package controller;
 
 import model.TypeModel;
 import model.TypeModelImpl;
-//this class revolves around Jframes and what not which is perfect...
+import view.TypeView;
 
 
 //da brains
 public class TypeControllerImpl implements TypeController {
   TypeModel model;
+  TypeView view;
+
 
   public TypeControllerImpl(TypeModel model){
     this.model = model;
@@ -22,7 +24,7 @@ public class TypeControllerImpl implements TypeController {
     //main keys, all on the keyboard
     //if return or some weird line break, don't care
     //space create a new word
-    //key pressed, add to the current processing list.
+    //key pressed, add to the current processing list./
 
   }
 }

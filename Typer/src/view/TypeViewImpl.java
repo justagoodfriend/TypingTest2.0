@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -57,7 +58,7 @@ public class TypeViewImpl extends JFrame implements TypeView, KeyListener, Actio
     //this label will be used to display the list of strings given from the model, and will update onc
     this.textDisplay = new JLabel();
     this.add(textDisplay);
-    this.DisplayWords(this.model.getWordList(), true);
+    this.DisplayWords(this.model.getWordList(), true, 0);
 
     this.resultBox = new JLabel();
     this.add(resultBox);
@@ -91,26 +92,33 @@ public class TypeViewImpl extends JFrame implements TypeView, KeyListener, Actio
     switch(e.getKeyCode()) {
       //each switch statement needs their own scope:
       case KeyEvent.VK_BACK_SPACE: {
-        ArrayList<String> result = this.model.getWordList();
+        List<String> result = this.model.getWordList();
         boolean correct = this.model.charValidation("backspace");
-        this.DisplayWords(result, correct);
+        int index = this.model.getCurrentIndex();
+        this.DisplayWords(result, correct, index);
         break;
       }
-      case KeyEvent.VK_SPACE:
-        this.DisplayWords(this.model.spaceUpdate(), true);
+      case KeyEvent.VK_SPACE: {
+        List<String> result = this.model.spaceUpdate();
+        int index = this.model.getCurrentIndex();
+        this.DisplayWords(result, true, index);
         this.wordBox.setText("");
         break;
-
+      }
       case KeyEvent.VK_SHIFT: {
-        ArrayList<String> result = this.model.getWordList();
+        System.out.println("Made it into this part");
+        List<String> result = this.model.getWordList();
         boolean correct = this.model.charValidation("shift");
+        int index = this.model.getCurrentIndex();
+        this.DisplayWords(result, correct, index);
         break;
       }
       default: {
-        ArrayList<String> result = this.model.getWordList();
+        List<String> result = this.model.getWordList();
         boolean correct = this.model.charValidation(KeyEvent.getKeyText(e.getKeyCode()));
+        int index = this.model.getCurrentIndex();
         System.out.println("Is this correct?" + correct);
-        this.DisplayWords(result, correct);
+        this.DisplayWords(result, correct, index);
 
         //worrying about only numbers and characters,
         //annoyingly this only produces uppercase letters
@@ -120,29 +128,40 @@ public class TypeViewImpl extends JFrame implements TypeView, KeyListener, Actio
     }
   }
 
-  private void DisplayWords(ArrayList<String> modelWords, boolean color){
+  private void DisplayWords(List<String> modelWords, boolean color, int index){
     StringBuilder result = new StringBuilder();
-    if(!color){
-      result.append("<html><font color=\"red\">").append(modelWords.get(0)).append("</font>").append(" ");
-      //System.out.println("Made it here!");
-    } else{
-      result.append("<html>").append(modelWords.get(0)).append(" ");
-    }
-
-    for(int i = 1; i < modelWords.size(); i ++){
+    result.append("<html>");
+    for(int i = 0; i < modelWords.size(); i ++) {
+      //are we at the index with the model?
+      if(i == index){
+        if(!color){
+          result.append("<font color=\"red\">").append(modelWords.get(i)).append("</font>").append(" ");
+        }else{
+          result.append("<font color=\"gray\">").append(modelWords.get(i)).append("</font>").append(" ");
+        }
+      }
+      //did we find the flag for the new line
+      else if(modelWords.get(i).equals("\n")){
+        result.append("<br/>");
+      }
+      else{
         result.append(modelWords.get(i)).append(" ");
-    }
+      }
 
-    String finalResult = result.append("</html>").toString();
-    System.out.println("this is the final string" + finalResult);
-    this.textDisplay.setText(finalResult);
+      String finalResult = result.toString();
+      this.textDisplay.setText(finalResult);
+    }
   }
 
 
   @Override
   public void keyReleased(KeyEvent e) {
-    System.out.println("this Key was released: " + KeyEvent.getKeyText(e.getKeyCode()));
-    //for shifting, once I detect a
+    if(e.getKeyCode() == KeyEvent.VK_SHIFT){
+      List<String> result = this.model.getWordList();
+      boolean correct = this.model.charValidation("unshift");
+      int index = this.model.getCurrentIndex();
+      this.DisplayWords(result, correct, index);
+    }
   }
 
   @Override
@@ -152,7 +171,7 @@ public class TypeViewImpl extends JFrame implements TypeView, KeyListener, Actio
       case "Restart Test":
         System.out.println("made it into this function");
         this.model = new TypeModelImpl();
-        this.DisplayWords(this.model.getWordList(), true);
+        this.DisplayWords(this.model.getWordList(), true, 0);
         this.wordBox.setText("");
         this.resultBox.setText("");
         this.startedTyping = false;
