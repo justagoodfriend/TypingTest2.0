@@ -141,7 +141,7 @@ public class TypeViewImpl extends JFrame implements TypeView, KeyListener, Actio
         }
       }
       //did we find the flag for the new line
-      else if(modelWords.get(i).equals("\n")){
+      else if(modelWords.get(i).equals("FLAG!!")){
         result.append("<br/>");
       }
       else{

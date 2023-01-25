@@ -111,8 +111,8 @@ public class TypeModelImpl implements TypeModel {
     this.createdWord = new ArrayList<Character>();
     // i.e shift forward where our position is at in the list
     //we look forward to the next index, if it happens to be a "\n"
-    if(this.currentLine.get(currentIndex + 1).equals("\n")){
-      List<String> newInputs = this.currentLine.subList(currentIndex + 1, currentLine.size());
+    if(this.currentLine.get(currentIndex + 1).equals("FLAG!!")){
+      List<String> newInputs = this.currentLine.subList(currentIndex + 2, currentLine.size());
       System.out.println(newInputs);
       this.currentLine = newInputs;
       //once we detect that we have reached the end of the line by the flag,
@@ -152,7 +152,7 @@ public class TypeModelImpl implements TypeModel {
       newList.add(selectedWord);
       charCount+= selectedWord.length();
     }
-    newList.add("\n");
+    newList.add("FLAG!!");
     //once done, add "\n" as a last argument kinda as a flag pretty much
 
     System.out.println(newList);
@@ -170,9 +170,9 @@ public class TypeModelImpl implements TypeModel {
   //once we press enter, we need to determine how many of the keys were correctly typed.
   private void calculateScoreForWord(){
     this.keysPressed += this.createdWord.size();
-    int minSize = Math.min(this.currentLine.get(0).length(), this.createdWord.size());
+    int minSize = Math.min(this.currentLine.get(currentIndex).length(), this.createdWord.size());
     for(int i = 0; i < minSize; i ++){
-      if(this.createdWord.get(i).equals(currentLine.get(0).charAt(i))){
+      if(this.createdWord.get(i).equals(currentLine.get(currentIndex).charAt(i))){
         correctKeysPressed +=1;
       }else{
         //adds the incorrect characters to list to generate incorrect answers.
@@ -198,3 +198,4 @@ public class TypeModelImpl implements TypeModel {
     return (double) this.correctKeysPressed/ (double) this.keysPressed * 100;
   }
 }
+//TODO: WPM clearly off, and the fram keeps shifting with each row, just a little quirk
