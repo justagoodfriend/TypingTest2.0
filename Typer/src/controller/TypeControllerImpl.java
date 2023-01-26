@@ -117,6 +117,5 @@ public class TypeControllerImpl implements TypeController, Features {
     this.view.DisplayWords(this.model.getWordList(), true, 0);
     this.startedTyping = false;
     //clear our models and views and just grab new ones, maybe there's a better way of doing this
-
   }
 }

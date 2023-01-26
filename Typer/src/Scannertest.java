@@ -18,7 +18,7 @@ public class Scannertest {
     TypeModel testmodel = new TypeModelImpl();
     //timer reprsenting the amount of time you want the test to last.
     TypeView testview = new TypeViewImpl(testmodel);
-    TypeController controller = new TypeControllerImpl(testmodel, testview, 5);
+    TypeController controller = new TypeControllerImpl(testmodel, testview, 10);
     controller.playGame();
 
 
