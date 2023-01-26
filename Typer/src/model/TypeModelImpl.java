@@ -198,4 +198,3 @@ public class TypeModelImpl implements TypeModel {
     return (double) this.correctKeysPressed/ (double) this.keysPressed * 100;
   }
 }
-//TODO: WPM clearly off, and the fram keeps shifting with each row, just a little quirk
